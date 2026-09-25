@@ -37,14 +37,25 @@ async def websocket_endpoint(websocket: WebSocket, meeting_code: str, client_id:
             import json
             message = json.loads(data)
             target = message.get("target")
+            message_type = message.get("type")
+            
+            message["sender"] = client_id
+            if "display_name" not in message:
+                message["display_name"] = display_name
+                
             if target and meeting_code in manager.active_connections and target in manager.active_connections[meeting_code]:
-                message["sender"] = client_id
-                if "display_name" not in message:
-                    message["display_name"] = display_name
                 try:
                     await manager.active_connections[meeting_code][target]["ws"].send_text(json.dumps(message))
                 except:
                     pass
+            elif message_type in ["chat", "reaction"]:
+                if meeting_code in manager.active_connections:
+                    for cid, info in manager.active_connections[meeting_code].items():
+                        if cid != client_id:
+                            try:
+                                await info["ws"].send_text(json.dumps(message))
+                            except:
+                                pass
     except WebSocketDisconnect:
         manager.disconnect(meeting_code, client_id)
         await manager.broadcast_left(meeting_code, client_id)
