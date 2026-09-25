@@ -16,11 +16,12 @@ from pydantic import BaseModel
 
 class InstantMeetingCreate(BaseModel):
     title: str | None = None
+import os
 from app.routers.signaling import manager
 
 router = APIRouter()
 
-FRONTEND_URL = "http://localhost:3000"
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://frontend-eight-livid-03b04fqa69.vercel.app")
 
 def get_default_user(db: Session) -> User:
     user = db.query(User).filter(User.email == "alex@example.com").first()
