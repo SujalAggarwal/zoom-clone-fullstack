@@ -9,6 +9,7 @@ import MeetingControls from '@/components/meeting/MeetingControls';
 import VideoGrid from '@/components/meeting/VideoGrid';
 import ParticipantsPanel from '@/components/meeting/ParticipantsPanel';
 import ChatPanel from '@/components/meeting/ChatPanel';
+import ReactionLayer from '@/components/meeting/ReactionLayer';
 import { Button } from '@/components/ui/Button';
 import { useWebRTC } from '@/lib/useWebRTC';
 
@@ -51,7 +52,7 @@ export default function MeetingRoomPage() {
     }
   }, []);
 
-  const { localStream, remoteParticipants, isMuted, isVideoOff, toggleMute, toggleVideo, leave, error: rtcError, wasRemoved, clientId, messages, sendChatMessage } = useWebRTC(code, localName);
+  const { localStream, remoteParticipants, isMuted, isVideoOff, toggleMute, toggleVideo, toggleScreenShare, leave, error: rtcError, wasRemoved, clientId, messages, sendChatMessage, isScreenSharing, reactions, sendReaction } = useWebRTC(code, localName);
 
   useEffect(() => {
     if (wasRemoved) {
@@ -140,6 +141,7 @@ export default function MeetingRoomPage() {
           onSendMessage={sendChatMessage}
           localClientId={clientId}
         />
+        <ReactionLayer reactions={reactions} />
       </main>
 
       <MeetingControls 
@@ -157,6 +159,7 @@ export default function MeetingRoomPage() {
           setIsChatOpen(!isChatOpen);
           if (!isChatOpen) setIsParticipantsOpen(false);
         }}
+        onSendReaction={sendReaction}
         onLeave={handleLeave} 
       />
     </div>

@@ -14,6 +14,13 @@ export interface ChatMessage {
   timestamp: number;
 }
 
+export interface ReactionMessage {
+  id: string;
+  senderId: string;
+  reaction: string;
+  timestamp: number;
+}
+
 export function useWebRTC(meetingCode: string, displayName: string) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteParticipants, setRemoteParticipants] = useState<Map<string, RemoteParticipant>>(new Map());
@@ -25,6 +32,7 @@ export function useWebRTC(meetingCode: string, displayName: string) {
   const [wasRemoved, setWasRemoved] = useState(false);
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [reactions, setReactions] = useState<ReactionMessage[]>([]);
 
   const ws = useRef<WebSocket | null>(null);
   const peers = useRef<Map<string, RTCPeerConnection>>(new Map());
@@ -215,6 +223,13 @@ export function useWebRTC(meetingCode: string, displayName: string) {
             text: msg.text,
             timestamp: msg.timestamp || Date.now()
           }]);
+        } else if (msg.type === 'reaction') {
+          setReactions(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            senderId: msg.sender,
+            reaction: msg.reaction,
+            timestamp: msg.timestamp || Date.now()
+          }]);
         }
       };
 
@@ -345,6 +360,23 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     }
   };
 
+  const sendReaction = (reaction: string) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const timestamp = Date.now();
+      ws.current.send(JSON.stringify({
+        type: 'reaction',
+        reaction,
+        timestamp
+      }));
+      setReactions(prev => [...prev, {
+        id: Math.random().toString(36).substring(7),
+        senderId: clientId.current,
+        reaction,
+        timestamp
+      }]);
+    }
+  };
+
   return {
     localStream,
     remoteParticipants: Array.from(remoteParticipants.values()),
@@ -359,6 +391,8 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     wasRemoved,
     clientId: clientId.current,
     messages,
-    sendChatMessage
+    sendChatMessage,
+    reactions,
+    sendReaction
   };
 }

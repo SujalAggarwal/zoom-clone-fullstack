@@ -10,10 +10,13 @@ interface ControlsProps {
   onToggleScreenShare: () => void;
   onToggleParticipants: () => void;
   onToggleChat: () => void;
+  onSendReaction: (reaction: string) => void;
   onLeave: () => void;
 }
 
-export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, onLeave }: ControlsProps) {
+export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, onSendReaction, onLeave }: ControlsProps) {
+  const [showReactions, setShowReactions] = React.useState(false);
+  const reactionsList = ["👍", "❤️", "😂", "😮", "👏", "🎉"];
   return (
     <footer className="h-16 sm:h-20 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-3 sm:px-6 text-white">
       {/* Core controls - always visible */}
@@ -66,10 +69,31 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         </button>
 
         {/* Reactions - hidden on small screens */}
-        <button className="hidden md:flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white">
-          <Smile size={20} className="mb-0.5" />
-          <span className="text-[10px]">Reactions</span>
-        </button>
+        <div className="relative hidden md:block">
+          {showReactions && (
+            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 rounded-2xl p-2 flex gap-1 shadow-2xl">
+              {reactionsList.map(r => (
+                <button
+                  key={r}
+                  onClick={() => {
+                    onSendReaction(r);
+                    setShowReactions(false);
+                  }}
+                  className="w-10 h-10 flex items-center justify-center text-2xl hover:bg-white/10 rounded-xl transition-colors hover:scale-110 active:scale-95"
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          )}
+          <button 
+            onClick={() => setShowReactions(!showReactions)}
+            className="flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
+          >
+            <Smile size={20} className="mb-0.5" />
+            <span className="text-[10px]">Reactions</span>
+          </button>
+        </div>
 
         {/* More - hidden on small screens */}
         <button className="hidden md:flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white">

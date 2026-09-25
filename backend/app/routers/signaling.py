@@ -117,8 +117,8 @@ async def websocket_endpoint(websocket: WebSocket, meeting_code: str, client_id:
                     await manager.active_connections[meeting_code][target]["ws"].send_text(json.dumps(message))
                 except:
                     pass
-            elif message_type == "chat":
-                # Broadcast chat message to everyone in the room except sender
+            elif message_type in ["chat", "reaction"]:
+                # Broadcast chat/reaction message to everyone in the room except sender
                 if meeting_code in manager.active_connections:
                     for cid, info in manager.active_connections[meeting_code].items():
                         if cid != client_id:
