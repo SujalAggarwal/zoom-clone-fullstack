@@ -20,6 +20,8 @@ export function useWebRTC(meetingCode: string, displayName: string) {
   const clientId = useRef<string>(Math.random().toString(36).substring(7));
   const isInitializing = useRef(false);
 
+  const pendingCandidates = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
+
   const addParticipant = useCallback((id: string, name: string) => {
     setRemoteParticipants(prev => {
       if (prev.has(id)) return prev;
@@ -39,6 +41,7 @@ export function useWebRTC(meetingCode: string, displayName: string) {
       peers.current.get(id)?.close();
       peers.current.delete(id);
     }
+    pendingCandidates.current.delete(id);
   }, []);
 
   const setRemoteStream = useCallback((id: string, stream: MediaStream) => {
@@ -57,22 +60,7 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     const pc = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        {
-          urls: 'turn:openrelay.metered.ca:80',
-          username: 'openrelayproject',
-          credential: 'openrelayproject'
-        },
-        {
-          urls: 'turn:openrelay.metered.ca:443',
-          username: 'openrelayproject',
-          credential: 'openrelayproject'
-        },
-        {
-          urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-          username: 'openrelayproject',
-          credential: 'openrelayproject'
-        }
+        { urls: 'stun:stun1.l.google.com:19302' }
       ]
     });
     
@@ -120,7 +108,6 @@ export function useWebRTC(meetingCode: string, displayName: string) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       setLocalStream(stream);
       
-      // Fix: properly convert http->ws and https->wss
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const wsUrl = apiUrl.replace(/^https/, 'wss').replace(/^http/, 'ws');
       const socket = new WebSocket(`${wsUrl}/ws/meeting/${meetingCode}?client_id=${clientId.current}&display_name=${encodeURIComponent(displayName)}`);
@@ -138,6 +125,14 @@ export function useWebRTC(meetingCode: string, displayName: string) {
           addParticipant(msg.sender, msg.display_name || 'User');
           const pc = createPeerConnection(msg.sender, stream, false);
           await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+          
+          // Add queued candidates
+          const queued = pendingCandidates.current.get(msg.sender) || [];
+          for (const candidate of queued) {
+            await pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(console.error);
+          }
+          pendingCandidates.current.delete(msg.sender);
+
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
           if (socket.readyState === WebSocket.OPEN) {
@@ -145,11 +140,24 @@ export function useWebRTC(meetingCode: string, displayName: string) {
           }
         } else if (msg.type === 'answer') {
           const pc = peers.current.get(msg.sender);
-          if (pc) await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+          if (pc) {
+            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            // Add queued candidates
+            const queued = pendingCandidates.current.get(msg.sender) || [];
+            for (const candidate of queued) {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(console.error);
+            }
+            pendingCandidates.current.delete(msg.sender);
+          }
         } else if (msg.type === 'ice-candidate') {
           const pc = peers.current.get(msg.sender);
-          if (pc && msg.candidate) {
+          if (pc && pc.remoteDescription) {
             await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch(console.error);
+          } else {
+            // Queue candidate
+            const queued = pendingCandidates.current.get(msg.sender) || [];
+            queued.push(msg.candidate);
+            pendingCandidates.current.set(msg.sender, queued);
           }
         } else if (msg.type === 'force-mute') {
           if (stream) {
