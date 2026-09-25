@@ -31,9 +31,9 @@ def seed_db():
             
             meetings = [
                 # Past/recent meetings only (so Upcoming tab stays clean for user testing)
-                Meeting(meeting_code="past123", host_id=user.id, title="Frontend Architecture Review", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=1), duration_minutes=60, status=MeetingStatus.ended),
-                Meeting(meeting_code="past456", host_id=user.id, title="Sprint Retrospective", meeting_type=MeetingType.instant, scheduled_at=now - timedelta(days=2), duration_minutes=30, status=MeetingStatus.ended),
-                Meeting(meeting_code="past789", host_id=user.id, title="Client Onboarding", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=5), duration_minutes=45, status=MeetingStatus.ended),
+                Meeting(meeting_code="842-951-332", host_id=user.id, title="Frontend Architecture Review", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=1), duration_minutes=60, status=MeetingStatus.ended),
+                Meeting(meeting_code="521-893-019", host_id=user.id, title="Sprint Retrospective", meeting_type=MeetingType.instant, scheduled_at=now - timedelta(days=2), duration_minutes=30, status=MeetingStatus.ended),
+                Meeting(meeting_code="394-118-992", host_id=user.id, title="Client Onboarding", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=5), duration_minutes=45, status=MeetingStatus.ended),
             ]
             
             for m in meetings:
