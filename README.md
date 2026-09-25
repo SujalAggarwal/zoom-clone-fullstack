@@ -1,83 +1,83 @@
-# Zoom Clone
+# Zoom Clone - Premium Video Conferencing Web App
 
-A full-stack, responsive Zoom web application clone featuring instant meetings, scheduling, and peer-to-peer WebRTC video conferencing with real-time WebSocket signaling. 
+![Zoom Clone Preview](https://github.com/SujalAggarwal/zoom-clone-fullstack/raw/main/preview.png)
 
-## Tech Stack
-- **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS
-- **Backend**: FastAPI (Python), SQLAlchemy, SQLite
-- **Real-Time**: WebRTC for P2P video/audio, WebSockets for signaling and host controls
+A full-stack, industry-level video conferencing application built with Next.js, FastAPI, WebSockets, and WebRTC. Designed with a modern, glassmorphic dark-mode UI to deliver a seamless and premium user experience.
 
-## Features Implemented
-### Core Features
-- **Project Foundation**: Monorepo structure, unified design system (Tailwind).
-- **Dashboard**: Live clock, upcoming meetings list, and quick actions.
-- **Instant Meetings**: 1-click meeting creation with auto-generated unique codes and shareable invite links.
-- **Join Meeting**: 2-step modal to join via Meeting ID or invite link, with automatic URL parsing and name input.
-- **Schedule Meeting**: Modal with client-side validation for future dates, generating shareable invite links.
-- **Video Meeting Room**: WebRTC integration! Peer-to-peer video grid that dynamically resizes as users join and leave. Functional mute and stop-video toggles.
+## ✨ Features
 
-### Bonus Features
-- **Host Controls**: A dedicated Participants panel allowing the host to **Mute All** and selectively **Remove** non-host participants. Removed users are gracefully booted to the dashboard.
+*   **P2P Video Conferencing (WebRTC):** Low-latency, high-quality audio and video streaming directly between peers.
+*   **Real-time Signaling (WebSockets):** Instant room joining, leaving, and signaling handled by a robust FastAPI WebSocket backend.
+*   **Premium UI/UX:** Dark theme, glassmorphism, micro-animations, and fluid responsive design (Mobile, Tablet, Desktop).
+*   **In-Meeting Text Chat:** Real-time chat panel built directly into the meeting room.
+*   **Live Screen Sharing:** Present your screen, window, or browser tab with a single click.
+*   **Host Controls:** Mute participants, disable their video, or remove them from the meeting.
+*   **Dashboard & Scheduling:** View upcoming meetings, join via code, or schedule new ones.
+*   **Seamless Connectivity:** Integrated TURN servers to bypass restrictive firewalls and mobile networks.
 
-## Setup Instructions
-### Prerequisites
-- Node.js (v18+)
-- Python 3.10+
+## 🛠️ Tech Stack
 
-### Backend Setup
-1. Open a terminal and navigate to the backend folder:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   # Windows:
-   .\venv\Scripts\activate
-   # Mac/Linux:
-   source venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the seed script to create the default user and DB:
-   ```bash
-   python -m app.seed
-   ```
-5. Start the FastAPI server:
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
-   *The backend will run on `http://localhost:8000`.*
+**Frontend:**
+*   Next.js 14 (App Router)
+*   React
+*   Tailwind CSS (with Glassmorphism utilities)
+*   Lucide Icons
+*   WebRTC API
 
-### Frontend Setup
-1. Open a second terminal and navigate to the frontend folder:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env.local` file with the following:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:8000
-   ```
-4. Start the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-   *The frontend will run on `http://localhost:3000`.*
+**Backend:**
+*   Python 3.10+
+*   FastAPI
+*   WebSockets
+*   SQLite / SQLAlchemy (Meeting & User Data)
+*   Uvicorn
 
-## Known Limitations / Assumptions
-- **Authentication**: There is no actual authentication system. The app uses a "default user" (`alex@example.com`) established by the seed script for meeting creation. Anyone creating a meeting acts as the Host.
-- **WebRTC Signaling**: Signaling is handled in-memory by the FastAPI WebSocket router. This means it will not scale across multiple backend server instances (e.g., if deployed on a platform that spins up multiple workers) without migrating to a Redis Pub/Sub adapter.
-- **Peer-to-Peer Limits**: WebRTC here is purely P2P (mesh network). It works perfectly for 2-4 users but would require an SFU (Selective Forwarding Unit) like LiveKit to support larger rooms efficiently.
+## 🚀 Live Demo
 
-## Deployed Links
-- **Live Frontend (Vercel)**: [https://frontend-eight-livid-03b04fqa69.vercel.app](https://frontend-eight-livid-03b04fqa69.vercel.app)
-- **Live Backend (Render)**: [https://zoom-clone-fullstack-627l.onrender.com/docs](https://zoom-clone-fullstack-627l.onrender.com/docs)
-- **GitHub Repository**: [https://github.com/SujalAggarwal/zoom-clone-fullstack](https://github.com/SujalAggarwal/zoom-clone-fullstack)
+*   **Frontend (Vercel):** [https://frontend-eight-livid-03b04fqa69.vercel.app](https://frontend-eight-livid-03b04fqa69.vercel.app)
+*   **Backend (Render):** [https://zoom-clone-fullstack-627l.onrender.com](https://zoom-clone-fullstack-627l.onrender.com)
 
-*(Note: The backend is deployed on Render's free tier. If it hasn't been used in a while, it may take 50 seconds to spin up on the first request.)*
+## 💻 Running Locally
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/SujalAggarwal/zoom-clone-fullstack.git
+cd zoom-clone-fullstack
+```
+
+### 2. Backend Setup
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+# Mac/Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
+
+# Run the server
+uvicorn app.main:app --reload --host 0.0.0.1 --port 8000
+```
+
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+
+# Create a .env.local file and add:
+# NEXT_PUBLIC_API_URL=http://localhost:8000
+
+npm run dev
+```
+
+Visit `http://localhost:3000` to view the app!
+
+## 📱 Responsiveness
+The UI is built with a mobile-first approach, ensuring the application looks stunning and remains fully functional on:
+*   📱 Mobile Devices (~375px) - Stacked layouts, bottom sheets, and collapsed navbars.
+*   💻 Tablets (~768px) - 2-column grids and optimized touch targets.
+*   🖥️ Desktops (1280px+) - Full wide-screen experience with side panels.
+
+## 🤝 Contributing
+Contributions are always welcome! Feel free to open an issue or submit a pull request.
