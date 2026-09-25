@@ -55,7 +55,25 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     if (peers.current.has(targetId)) return peers.current.get(targetId)!;
     
     const pc = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        }
+      ]
     });
     
     stream.getTracks().forEach(track => pc.addTrack(track, stream));
@@ -102,7 +120,9 @@ export function useWebRTC(meetingCode: string, displayName: string) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       setLocalStream(stream);
       
-      const wsUrl = process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws') || 'ws://localhost:8000';
+      // Fix: properly convert http->ws and https->wss
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const wsUrl = apiUrl.replace(/^https/, 'wss').replace(/^http/, 'ws');
       const socket = new WebSocket(`${wsUrl}/ws/meeting/${meetingCode}?client_id=${clientId.current}&display_name=${encodeURIComponent(displayName)}`);
       ws.current = socket;
 
