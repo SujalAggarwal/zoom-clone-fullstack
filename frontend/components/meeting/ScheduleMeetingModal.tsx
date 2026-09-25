@@ -148,12 +148,12 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                 onChange={(e) => setDuration(Number(e.target.value))}
                 style={{ colorScheme: 'dark' }}
               >
-                <option value={15}>15 minutes</option>
-                <option value={30}>30 minutes</option>
-                <option value={45}>45 minutes</option>
-                <option value={60}>1 hour</option>
-                <option value={90}>1 hour 30 minutes</option>
-                <option value={120}>2 hours</option>
+                <option value={15} className="bg-gray-900 text-white">15 minutes</option>
+                <option value={30} className="bg-gray-900 text-white">30 minutes</option>
+                <option value={45} className="bg-gray-900 text-white">45 minutes</option>
+                <option value={60} className="bg-gray-900 text-white">1 hour</option>
+                <option value={90} className="bg-gray-900 text-white">1 hour 30 minutes</option>
+                <option value={120} className="bg-gray-900 text-white">2 hours</option>
               </select>
             </div>
 
