@@ -87,7 +87,7 @@ export default function MeetingRoomPage() {
 
   const handleMuteAll = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/meetings/${code}/mute-all`, { method: 'POST' });
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/meetings/${code}/mute-all?exclude_client_id=${clientId}`, { method: 'POST' });
     } catch(err) {}
   };
 

@@ -207,7 +207,7 @@ def get_meeting_participants(meeting_code: str, db: Session = Depends(get_db)):
     return [ParticipantResponse.model_validate(p) for p in participants]
 
 @router.post("/{meeting_code}/mute-all")
-async def mute_all(meeting_code: str, db: Session = Depends(get_db)):
+async def mute_all(meeting_code: str, exclude_client_id: str = None, db: Session = Depends(get_db)):
     meeting = db.query(Meeting).filter(Meeting.meeting_code == meeting_code).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
@@ -218,7 +218,7 @@ async def mute_all(meeting_code: str, db: Session = Depends(get_db)):
     ).update({"is_muted": True})
     db.commit()
     
-    await manager.broadcast_force_mute(meeting_code)
+    await manager.broadcast_force_mute(meeting_code, exclude_client_id)
     return {"message": "All participants muted"}
 
 @router.post("/{meeting_code}/participants/{client_id}/remove")

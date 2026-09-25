@@ -56,9 +56,11 @@ class ConnectionManager:
                 except:
                     pass
 
-    async def broadcast_force_mute(self, meeting_code: str):
+    async def broadcast_force_mute(self, meeting_code: str, exclude_client_id: str = None):
         if meeting_code in self.active_connections:
             for cid, info in self.active_connections[meeting_code].items():
+                if cid == exclude_client_id:
+                    continue
                 try:
                     await info["ws"].send_text(json.dumps({
                         "type": "force-mute"
