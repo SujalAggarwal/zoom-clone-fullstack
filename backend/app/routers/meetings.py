@@ -52,7 +52,7 @@ def create_instant_meeting(meeting_in: InstantMeetingCreate | None = None, db: S
         title=meeting_title,
         meeting_type=MeetingType.instant,
         status=MeetingStatus.ongoing,
-        scheduled_at=datetime.now(),
+        scheduled_at=datetime.utcnow(),
         duration_minutes=60
     )
     db.add(meeting)

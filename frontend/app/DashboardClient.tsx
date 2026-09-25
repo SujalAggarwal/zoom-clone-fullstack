@@ -14,7 +14,8 @@ import { ScheduleMeetingModal } from '@/components/meeting/ScheduleMeetingModal'
 import { useAuth } from '@/lib/AuthContext';
 
 function formatMeetingDate(isoString: string) {
-  const date = new Date(isoString);
+  const dateStr = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
+  const date = new Date(dateStr);
   return date.toLocaleString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric',
     hour: 'numeric', minute: '2-digit', hour12: true
@@ -22,7 +23,8 @@ function formatMeetingDate(isoString: string) {
 }
 
 function getTimeUntil(isoString: string) {
-  const diff = new Date(isoString).getTime() - Date.now();
+  const dateStr = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
+  const diff = new Date(dateStr).getTime() - Date.now();
   if (diff < 0) return 'Started';
   const mins = Math.floor(diff / 60000);
   if (mins < 60) return `in ${mins}m`;
