@@ -59,6 +59,11 @@ export function JoinMeetingModal({ isOpen, onClose }: JoinMeetingModalProps) {
     
     try {
       await joinMeeting(meeting.meeting_code, nameInput.trim());
+      // Save the name so the meeting page can read it
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('joinName', nameInput.trim());
+        sessionStorage.setItem('isHost', 'false'); // Guest joining via code
+      }
       onClose();
       router.push(`/meeting/${meeting.meeting_code}`);
     } catch (err) {
