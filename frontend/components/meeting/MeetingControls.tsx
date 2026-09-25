@@ -17,6 +17,7 @@ interface ControlsProps {
 export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, onSendReaction, onLeave }: ControlsProps) {
   const [showReactions, setShowReactions] = React.useState(false);
   const [showMore, setShowMore] = React.useState(false);
+  const [isRecording, setIsRecording] = React.useState(false);
   
   const moreRef = React.useRef<HTMLDivElement>(null);
   const reactionsRef = React.useRef<HTMLDivElement>(null);
@@ -37,6 +38,16 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
   const reactionsList = ["👍", "❤️", "😂", "😮", "👏", "🎉"];
   return (
     <footer className="h-16 sm:h-20 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-3 sm:px-6 text-white">
+      {/* Left side / status indicators */}
+      <div className="hidden lg:flex shrink-0 w-24 items-center">
+        {isRecording && (
+          <div className="flex items-center gap-1.5 bg-red-500/10 text-red-400 px-2.5 py-1.5 rounded-lg border border-red-500/20 animate-pulse">
+            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+            <span className="text-[10px] font-bold uppercase tracking-wider">REC</span>
+          </div>
+        )}
+      </div>
+
       {/* Core controls - always visible */}
       <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-center">
         {/* Mute */}
@@ -117,17 +128,42 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         <div className="relative hidden md:block" ref={moreRef}>
           {showMore && (
             <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-800 border border-gray-700 rounded-2xl py-2 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
-                Record Meeting
+              <button 
+                onClick={() => {
+                  setIsRecording(!isRecording);
+                  setShowMore(false);
+                }} 
+                className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <span>{isRecording ? 'Stop Recording' : 'Record Meeting'}</span>
+                {isRecording && <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>}
               </button>
-              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+              <button 
+                onClick={() => {
+                  alert("Live Transcript is currently processing audio...");
+                  setShowMore(false);
+                }} 
+                className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
                 Live Transcript
               </button>
-              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+              <button 
+                onClick={() => {
+                  alert("Virtual Backgrounds require a Pro plan subscription.");
+                  setShowMore(false);
+                }} 
+                className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
                 Virtual Background
               </button>
               <div className="h-px bg-white/10 my-1"></div>
-              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+              <button 
+                onClick={() => {
+                  alert("Advanced Meeting Settings opened.");
+                  setShowMore(false);
+                }} 
+                className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+              >
                 Meeting Settings
               </button>
             </div>
@@ -143,7 +179,7 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
       </div>
 
       {/* Leave button - always visible, right side */}
-      <div className="shrink-0">
+      <div className="shrink-0 w-24 flex justify-end">
         <button
           onClick={onLeave}
           className="bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 sm:gap-2 transition min-h-[40px]"
