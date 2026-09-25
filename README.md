@@ -76,8 +76,8 @@ A full-stack, responsive Zoom web application clone featuring instant meetings, 
 - **Peer-to-Peer Limits**: WebRTC here is purely P2P (mesh network). It works perfectly for 2-4 users but would require an SFU (Selective Forwarding Unit) like LiveKit to support larger rooms efficiently.
 
 ## Deployed Links
-- **Live Frontend**: [Vercel Deployment Link Here]
-- **Live Backend**: [Render/Railway Deployment Link Here]
-- **GitHub Repository**: [GitHub Link Here]
+- **Live Frontend (Vercel)**: [https://frontend-eight-livid-03b04fqa69.vercel.app](https://frontend-eight-livid-03b04fqa69.vercel.app)
+- **Live Backend (Render)**: [https://zoom-clone-fullstack-627l.onrender.com/docs](https://zoom-clone-fullstack-627l.onrender.com/docs)
+- **GitHub Repository**: [https://github.com/SujalAggarwal/zoom-clone-fullstack](https://github.com/SujalAggarwal/zoom-clone-fullstack)
 
-*(Note: When deploying, remember to set `NEXT_PUBLIC_API_URL` to your live backend HTTPS URL in Vercel's environment variables.)*
+*(Note: The backend is deployed on Render's free tier. If it hasn't been used in a while, it may take 50 seconds to spin up on the first request.)*
