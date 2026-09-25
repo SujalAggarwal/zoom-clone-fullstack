@@ -25,13 +25,10 @@ def seed_db():
             print(f"Default user already exists: {user.name}")
 
         # Create sample meetings
-        existing_meetings = db.query(Meeting).filter(Meeting.host_id == user.id).count()
-        # We won't seed any dummy meetings initially.
-        # This ensures the Recent tab is completely empty for a new user, 
-        # and meetings only show up there after they actually create them.
-        pass
-        else:
-            print("Sample meetings already exist.")
+        # Clear all existing meetings to ensure a completely fresh start for the user
+        db.query(Meeting).delete()
+        db.commit()
+        print("Database wiped clean for fresh user testing.")
             
     finally:
         db.close()
