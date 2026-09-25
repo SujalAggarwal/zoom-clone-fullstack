@@ -14,10 +14,11 @@ export async function getRecentMeetings(): Promise<Meeting[]> {
   return res.json();
 }
 
-export async function createInstantMeeting(): Promise<MeetingInstantResponse> {
+export async function createInstantMeeting(title?: string): Promise<MeetingInstantResponse> {
   const res = await fetch(`${API_URL}/meetings/instant`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: title ? JSON.stringify({ title }) : undefined,
   });
   if (!res.ok) throw new Error('Failed to create instant meeting');
   return res.json();

@@ -85,7 +85,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
     setIsCreating(true);
     setCreateError(null);
     try {
-      const res = await createInstantMeeting();
+      const res = await createInstantMeeting(`${user.name}'s Instant Meeting`);
       sessionStorage.setItem('joinName', user.name);
       sessionStorage.setItem('isHost', 'true');
       router.push(`/meeting/${res.meeting_code}`);

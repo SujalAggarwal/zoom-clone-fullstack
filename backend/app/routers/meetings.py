@@ -12,6 +12,10 @@ from app.schemas import (
     MeetingSchedule, MeetingResponse, MeetingInstantResponse, 
     ParticipantCreate, ParticipantResponse, JoinMeetingResponse
 )
+from pydantic import BaseModel
+
+class InstantMeetingCreate(BaseModel):
+    title: str | None = None
 from app.routers.signaling import manager
 
 router = APIRouter()
@@ -32,7 +36,7 @@ def generate_meeting_code(db: Session) -> str:
             return code
 
 @router.post("/instant", response_model=MeetingInstantResponse, status_code=status.HTTP_201_CREATED)
-def create_instant_meeting(db: Session = Depends(get_db)):
+def create_instant_meeting(meeting_in: InstantMeetingCreate | None = None, db: Session = Depends(get_db)):
     """
     Creates an instant meeting for the default user.
     Auto-generates a unique meeting_code and sets meeting_type = instant.
@@ -40,10 +44,12 @@ def create_instant_meeting(db: Session = Depends(get_db)):
     host = get_default_user(db)
     code = generate_meeting_code(db)
     
+    meeting_title = meeting_in.title if meeting_in and meeting_in.title else f"{host.name}'s Instant Meeting"
+    
     meeting = Meeting(
         meeting_code=code,
         host_id=host.id,
-        title=f"{host.name}'s Instant Meeting",
+        title=meeting_title,
         meeting_type=MeetingType.instant,
         status=MeetingStatus.ongoing,
         scheduled_at=datetime.now(),
