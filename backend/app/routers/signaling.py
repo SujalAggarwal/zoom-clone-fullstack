@@ -27,10 +27,11 @@ class ConnectionManager:
                     }))
                 except Exception as e:
                     pass
-                # Inform new user about existing users
+                # Inform new user about existing users with user-exists
+                # (NOT user-joined to avoid both sides creating offers = glare)
                 try:
                     await websocket.send_text(json.dumps({
-                        "type": "user-joined",
+                        "type": "user-exists",
                         "client_id": cid,
                         "display_name": info["name"]
                     }))

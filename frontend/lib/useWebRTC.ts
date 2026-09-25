@@ -132,8 +132,12 @@ export function useWebRTC(meetingCode: string, displayName: string) {
         const msg = JSON.parse(event.data);
         
         if (msg.type === 'user-joined') {
+          // Existing user: I am already here, new person joined → I create offer
           addParticipant(msg.client_id, msg.display_name);
           createPeerConnection(msg.client_id, stream, true);
+        } else if (msg.type === 'user-exists') {
+          // I just joined: existing person is here → just add them, wait for their offer
+          addParticipant(msg.client_id, msg.display_name);
         } else if (msg.type === 'user-left') {
           removeParticipant(msg.client_id);
         } else if (msg.type === 'offer') {
