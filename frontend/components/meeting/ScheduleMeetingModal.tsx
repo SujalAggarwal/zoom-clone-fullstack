@@ -12,9 +12,12 @@ interface ScheduleMeetingModalProps {
   onSuccess: () => void;
 }
 
+import { useAuth } from '@/lib/AuthContext';
+
 export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMeetingModalProps) {
+  const { user } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
-  const [title, setTitle] = useState("Alex Morgan's Zoom Meeting");
+  const [title, setTitle] = useState(`${user?.name || 'My'} Zoom Meeting`);
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -28,7 +31,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
   useEffect(() => {
     if (isOpen) {
       setStep(1);
-      setTitle("Alex Morgan's Zoom Meeting");
+      setTitle(`${user?.name || 'My'} Zoom Meeting`);
       setDescription("");
       
       const now = new Date();
@@ -73,7 +76,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
     
     try {
       const isoString = scheduledAt!.toISOString();
-      const res = await scheduleMeeting({
+      const res = await scheduleMeeting(user?.email || "alex@example.com", {
         title,
         description,
         scheduled_at: isoString,

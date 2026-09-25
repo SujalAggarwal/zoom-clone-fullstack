@@ -23,10 +23,17 @@ router = APIRouter()
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://frontend-eight-livid-03b04fqa69.vercel.app")
 
-def get_default_user(db: Session) -> User:
-    user = db.query(User).filter(User.email == "alex@example.com").first()
+def get_current_user(db: Session, email: str = None) -> User:
+    if not email:
+        email = "alex@example.com"
+    user = db.query(User).filter(User.email == email).first()
     if not user:
-        raise HTTPException(status_code=500, detail="Default user not found. Did you run the seed script?")
+        # Create user on the fly if they don't exist
+        name = email.split('@')[0].capitalize()
+        user = User(email=email, name=name)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
     return user
 
 def generate_meeting_code(db: Session) -> str:
@@ -37,12 +44,12 @@ def generate_meeting_code(db: Session) -> str:
             return code
 
 @router.post("/instant", response_model=MeetingInstantResponse, status_code=status.HTTP_201_CREATED)
-def create_instant_meeting(meeting_in: InstantMeetingCreate | None = None, db: Session = Depends(get_db)):
+def create_instant_meeting(email: str = None, meeting_in: InstantMeetingCreate | None = None, db: Session = Depends(get_db)):
     """
-    Creates an instant meeting for the default user.
+    Creates an instant meeting for the given user.
     Auto-generates a unique meeting_code and sets meeting_type = instant.
     """
-    host = get_default_user(db)
+    host = get_current_user(db, email)
     code = generate_meeting_code(db)
     
     meeting_title = meeting_in.title if meeting_in and meeting_in.title else f"{host.name}'s Instant Meeting"
@@ -68,9 +75,9 @@ def create_instant_meeting(meeting_in: InstantMeetingCreate | None = None, db: S
     )
 
 @router.post("/schedule", response_model=MeetingResponse, status_code=status.HTTP_201_CREATED)
-def schedule_meeting(meeting_in: MeetingSchedule, db: Session = Depends(get_db)):
+def schedule_meeting(meeting_in: MeetingSchedule, email: str = None, db: Session = Depends(get_db)):
     """
-    Creates a scheduled meeting for the default user.
+    Creates a scheduled meeting for the given user.
     Rejects requests with past scheduled times.
     """
     # Remove timezone info for comparison with naive datetime
@@ -79,7 +86,7 @@ def schedule_meeting(meeting_in: MeetingSchedule, db: Session = Depends(get_db))
     if sched_at < datetime.now():
         raise HTTPException(status_code=400, detail="Cannot schedule a meeting in the past")
 
-    host = get_default_user(db)
+    host = get_current_user(db, email)
     code = generate_meeting_code(db)
     
     meeting = Meeting(
@@ -102,11 +109,11 @@ def schedule_meeting(meeting_in: MeetingSchedule, db: Session = Depends(get_db))
     return meeting_resp
 
 @router.get("/upcoming", response_model=List[MeetingResponse])
-def get_upcoming_meetings(db: Session = Depends(get_db)):
+def get_upcoming_meetings(email: str = None, db: Session = Depends(get_db)):
     """
-    Returns all upcoming scheduled meetings for the default user.
+    Returns all upcoming scheduled meetings for the given user.
     """
-    host = get_default_user(db)
+    host = get_current_user(db, email)
     now = datetime.now()
     meetings = db.query(Meeting).filter(
         Meeting.host_id == host.id,
@@ -122,11 +129,11 @@ def get_upcoming_meetings(db: Session = Depends(get_db)):
     return res
 
 @router.get("/recent", response_model=List[MeetingResponse])
-def get_recent_meetings(db: Session = Depends(get_db)):
+def get_recent_meetings(email: str = None, db: Session = Depends(get_db)):
     """
-    Returns up to 10 recent (ended or past) meetings for the default user.
+    Returns up to 10 recent (ended or past) meetings for the given user.
     """
-    host = get_default_user(db)
+    host = get_current_user(db, email)
     now = datetime.now()
     meetings = db.query(Meeting).filter(
         Meeting.host_id == host.id,
@@ -167,9 +174,8 @@ def join_meeting(meeting_code: str, participant_in: ParticipantCreate, db: Sessi
         
     host = db.query(User).filter(User.id == meeting.host_id).first()
     is_host = False
-    default_user = get_default_user(db)
     
-    if default_user and default_user.id == meeting.host_id and participant_in.display_name == default_user.name:
+    if host and participant_in.display_name == host.name:
         is_host = True
 
     participant = Participant(

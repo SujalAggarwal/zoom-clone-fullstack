@@ -53,24 +53,44 @@ function LiveClock() {
   );
 }
 
-export default function DashboardClient({ initialUpcoming, initialRecent, error }: {
-  initialUpcoming: Meeting[], initialRecent: Meeting[], error: string | null
-}) {
+export default function DashboardClient() {
   const router = useRouter();
   const { user } = useAuth();
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [upcomingMeetings, setUpcomingMeetings] = useState(initialUpcoming);
+  const [upcomingMeetings, setUpcomingMeetings] = useState<Meeting[]>([]);
+  const [recentMeetings, setRecentMeetings] = useState<Meeting[]>([]);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'recent'>('upcoming');
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!user) return null;
+  useEffect(() => {
+    if (user) {
+      refreshMeetings();
+    }
+  }, [user]);
+
+  const refreshMeetings = async () => {
+    if (!user) return;
+    try {
+      setError(null);
+      const [up, rec] = await Promise.all([
+        getUpcomingMeetings(user.email),
+        getRecentMeetings(user.email)
+      ]);
+      setUpcomingMeetings(up);
+      setRecentMeetings(rec);
+    } catch {
+      setError("Failed to load meetings. Make sure the backend is running.");
+    }
+  };
 
   const refreshUpcoming = async () => {
+    if (!user) return;
     try {
-      const fresh = await getUpcomingMeetings();
+      const fresh = await getUpcomingMeetings(user.email);
       setUpcomingMeetings(fresh);
     } catch {}
   };
@@ -87,7 +107,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
     setIsCreating(true);
     setCreateError(null);
     try {
-      const res = await createInstantMeeting(`${user.name}'s Instant Meeting`);
+      const res = await createInstantMeeting(user.email, `${user.name}'s Instant Meeting`);
       sessionStorage.setItem('joinName', user.name);
       sessionStorage.setItem('isHost', 'true');
       router.push(`/meeting/${res.meeting_code}`);
@@ -293,7 +313,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
             {/* Recent */}
             {activeTab === 'recent' && (
               <div>
-                {initialRecent.length === 0 ? (
+                {recentMeetings.length === 0 ? (
                   <div className="py-16 text-center">
                     <div className="w-14 h-14 bg-white/[0.04] rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <History size={24} className="text-white/20" />
@@ -302,7 +322,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
                   </div>
                 ) : (
                   <div className="divide-y divide-white/[0.04]">
-                    {initialRecent.map(meeting => (
+                    {recentMeetings.map(meeting => (
                       <div key={meeting.id} className="meeting-row flex items-center gap-4 px-6 py-4 transition-colors">
                         <div className="w-10 h-10 bg-white/[0.04] rounded-xl flex items-center justify-center shrink-0">
                           <Video size={16} className="text-white/30" />
