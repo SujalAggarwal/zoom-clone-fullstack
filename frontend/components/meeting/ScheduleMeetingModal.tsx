@@ -141,11 +141,12 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
             {errors.datetime && <p className="text-red-500 text-xs">{errors.datetime}</p>}
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 block">Duration</label>
+              <label className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-1.5 block">Duration</label>
               <select 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zoom-blue focus:border-zoom-blue transition-colors text-sm bg-white"
+                className="w-full px-4 py-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2D8CFF]/50 focus:border-[#2D8CFF]/50 transition-all"
                 value={duration}
                 onChange={(e) => setDuration(Number(e.target.value))}
+                style={{ colorScheme: 'dark' }}
               >
                 <option value={15}>15 minutes</option>
                 <option value={30}>30 minutes</option>
@@ -157,9 +158,9 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1.5 block">Description (Optional)</label>
+              <label className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-1.5 block">Description (Optional)</label>
               <textarea 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zoom-blue focus:border-zoom-blue transition-colors text-sm resize-none"
+                className="w-full px-4 py-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl text-white text-sm placeholder-white/25 focus:outline-none focus:ring-2 focus:ring-[#2D8CFF]/50 focus:border-[#2D8CFF]/50 transition-all resize-none"
                 rows={3}
                 placeholder="Meeting agenda or details"
                 value={description}
@@ -167,9 +168,9 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
               />
             </div>
 
-            {errors.api && <p className="text-red-500 text-sm p-3 bg-red-50 rounded-lg">{errors.api}</p>}
+            {errors.api && <p className="text-red-400 text-sm p-3 bg-red-500/10 border border-red-500/20 rounded-xl">{errors.api}</p>}
             
-            <div className="pt-4 flex justify-end gap-2 border-t border-gray-100">
+            <div className="pt-4 flex justify-end gap-2 border-t border-white/[0.06]">
               <Button variant="secondary" onClick={onClose}>Cancel</Button>
               <Button onClick={handleSchedule} disabled={isLoading}>
                 {isLoading ? 'Scheduling...' : 'Schedule'}
@@ -178,20 +179,20 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
           </div>
         ) : (
           <div className="space-y-6 text-center py-4">
-            <div className="bg-green-50 text-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2">
+            <div className="bg-emerald-500/10 text-emerald-400 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-emerald-500/20">
               <Calendar size={32} />
             </div>
             
             <div>
-              <h3 className="font-semibold text-xl text-gray-900">{scheduledMeeting?.title}</h3>
-              <p className="text-gray-500 mt-1">
+              <h3 className="font-semibold text-xl text-white">{scheduledMeeting?.title}</h3>
+              <p className="text-white/40 mt-1">
                 {scheduledMeeting?.scheduled_at ? formatDateTime(scheduledMeeting.scheduled_at) : ''}
               </p>
             </div>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex flex-col gap-3">
-              <div className="text-sm font-medium text-gray-700">Invite Link</div>
-              <div className="bg-white border border-gray-200 px-3 py-2 rounded text-sm text-gray-500 break-all select-all">
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 flex flex-col gap-3">
+              <div className="text-xs font-semibold text-white/40 uppercase tracking-wider">Invite Link</div>
+              <div className="bg-black/20 border border-white/[0.06] px-3 py-2 rounded-lg text-sm text-white/40 break-all select-all font-mono">
                 {scheduledMeeting?.invite_link}
               </div>
               <Button variant="secondary" className="w-full mt-2" onClick={handleCopyLink}>

@@ -1,6 +1,6 @@
 import { Meeting, MeetingInstantResponse, JoinMeetingResponse, Participant } from '../types/meeting';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 export async function getUpcomingMeetings(): Promise<Meeting[]> {
   const res = await fetch(`${API_URL}/meetings/upcoming`, { cache: 'no-store' });
