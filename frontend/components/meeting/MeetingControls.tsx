@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mic, MicOff, Video, VideoOff, Share, Smile, MoreHorizontal, PhoneOff, Users } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, Share, Smile, MoreHorizontal, PhoneOff, Users, MessageSquare } from 'lucide-react';
 
 interface ControlsProps {
   isMuted: boolean;
@@ -7,10 +7,11 @@ interface ControlsProps {
   onToggleMute: () => void;
   onToggleVideo: () => void;
   onToggleParticipants: () => void;
+  onToggleChat: () => void;
   onLeave: () => void;
 }
 
-export default function MeetingControls({ isMuted, isVideoOff, onToggleMute, onToggleVideo, onToggleParticipants, onLeave }: ControlsProps) {
+export default function MeetingControls({ isMuted, isVideoOff, onToggleMute, onToggleVideo, onToggleParticipants, onToggleChat, onLeave }: ControlsProps) {
   return (
     <footer className="h-16 sm:h-20 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-3 sm:px-6 text-white">
       {/* Core controls - always visible */}
@@ -42,6 +43,15 @@ export default function MeetingControls({ isMuted, isVideoOff, onToggleMute, onT
         >
           <Users size={20} className="mb-0.5" />
           <span className="text-[9px] sm:text-[10px]">Participants</span>
+        </button>
+
+        {/* Chat */}
+        <button
+          onClick={onToggleChat}
+          className="flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
+        >
+          <MessageSquare size={20} className="mb-0.5" />
+          <span className="text-[9px] sm:text-[10px]">Chat</span>
         </button>
 
         {/* Share - hidden on very small screens */}

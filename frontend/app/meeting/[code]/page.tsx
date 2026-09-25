@@ -8,6 +8,7 @@ import MeetingHeader from '@/components/meeting/MeetingHeader';
 import MeetingControls from '@/components/meeting/MeetingControls';
 import VideoGrid from '@/components/meeting/VideoGrid';
 import ParticipantsPanel from '@/components/meeting/ParticipantsPanel';
+import ChatPanel from '@/components/meeting/ChatPanel';
 import { Button } from '@/components/ui/Button';
 import { useWebRTC } from '@/lib/useWebRTC';
 
@@ -20,6 +21,7 @@ export default function MeetingRoomPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [isHost, setIsHost] = useState(false);
 
   const localName = useMemo(() => {
@@ -49,7 +51,7 @@ export default function MeetingRoomPage() {
     }
   }, []);
 
-  const { localStream, remoteParticipants, isMuted, isVideoOff, toggleMute, toggleVideo, leave, error: rtcError, wasRemoved, clientId } = useWebRTC(code, localName);
+  const { localStream, remoteParticipants, isMuted, isVideoOff, toggleMute, toggleVideo, leave, error: rtcError, wasRemoved, clientId, messages, sendChatMessage } = useWebRTC(code, localName);
 
   useEffect(() => {
     if (wasRemoved) {
@@ -131,6 +133,13 @@ export default function MeetingRoomPage() {
           onVideoOffUser={handleVideoOffUser}
           onRemove={handleRemove}
         />
+        <ChatPanel 
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+          messages={messages}
+          onSendMessage={sendChatMessage}
+          localClientId={clientId}
+        />
       </main>
 
       <MeetingControls 
@@ -138,7 +147,14 @@ export default function MeetingRoomPage() {
         isVideoOff={isVideoOff} 
         onToggleMute={toggleMute} 
         onToggleVideo={toggleVideo} 
-        onToggleParticipants={() => setIsParticipantsOpen(!isParticipantsOpen)}
+        onToggleParticipants={() => {
+          setIsParticipantsOpen(!isParticipantsOpen);
+          if (!isParticipantsOpen) setIsChatOpen(false);
+        }}
+        onToggleChat={() => {
+          setIsChatOpen(!isChatOpen);
+          if (!isChatOpen) setIsParticipantsOpen(false);
+        }}
         onLeave={handleLeave} 
       />
     </div>

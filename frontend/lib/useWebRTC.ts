@@ -6,6 +6,14 @@ export interface RemoteParticipant {
   stream: MediaStream | null;
 }
 
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  text: string;
+  timestamp: number;
+}
+
 export function useWebRTC(meetingCode: string, displayName: string) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteParticipants, setRemoteParticipants] = useState<Map<string, RemoteParticipant>>(new Map());
@@ -14,6 +22,8 @@ export function useWebRTC(meetingCode: string, displayName: string) {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [wasRemoved, setWasRemoved] = useState(false);
+  
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const ws = useRef<WebSocket | null>(null);
   const peers = useRef<Map<string, RTCPeerConnection>>(new Map());
@@ -196,6 +206,14 @@ export function useWebRTC(meetingCode: string, displayName: string) {
           }
         } else if (msg.type === 'force-remove') {
           setWasRemoved(true);
+        } else if (msg.type === 'chat') {
+          setMessages(prev => [...prev, {
+            id: Math.random().toString(36).substring(7),
+            senderId: msg.sender,
+            senderName: msg.display_name || 'User',
+            text: msg.text,
+            timestamp: msg.timestamp || Date.now()
+          }]);
         }
       };
 
@@ -246,6 +264,24 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     setRemoteParticipants(new Map());
   };
 
+  const sendChatMessage = (text: string) => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const timestamp = Date.now();
+      ws.current.send(JSON.stringify({
+        type: 'chat',
+        text,
+        timestamp
+      }));
+      setMessages(prev => [...prev, {
+        id: Math.random().toString(36).substring(7),
+        senderId: clientId.current,
+        senderName: displayName,
+        text,
+        timestamp
+      }]);
+    }
+  };
+
   return {
     localStream,
     remoteParticipants: Array.from(remoteParticipants.values()),
@@ -256,6 +292,8 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     leave,
     error,
     wasRemoved,
-    clientId: clientId.current
+    clientId: clientId.current,
+    messages,
+    sendChatMessage
   };
 }
