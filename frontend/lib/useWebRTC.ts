@@ -21,6 +21,7 @@ export function useWebRTC(meetingCode: string, displayName: string) {
   
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [wasRemoved, setWasRemoved] = useState(false);
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -256,6 +257,68 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     }
   };
 
+  const toggleScreenShare = async () => {
+    if (isScreenSharing) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoTrack = stream.getVideoTracks()[0];
+        if (localStream) {
+          const oldVideoTrack = localStream.getVideoTracks()[0];
+          localStream.removeTrack(oldVideoTrack);
+          oldVideoTrack.stop();
+          localStream.addTrack(videoTrack);
+          peers.current.forEach(pc => {
+            const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+            if (sender) sender.replaceTrack(videoTrack);
+          });
+          setLocalStream(new MediaStream(localStream.getTracks()));
+        }
+        setIsScreenSharing(false);
+      } catch (err) {
+        console.error("Failed to revert to webcam", err);
+      }
+    } else {
+      try {
+        const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const screenTrack = displayStream.getVideoTracks()[0];
+        
+        screenTrack.onended = () => {
+          // Trigger revert when user stops via browser UI
+          setIsScreenSharing(false);
+          navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+             const videoTrack = stream.getVideoTracks()[0];
+             if (localStream) {
+               const oldVideoTrack = localStream.getVideoTracks()[0];
+               localStream.removeTrack(oldVideoTrack);
+               oldVideoTrack.stop();
+               localStream.addTrack(videoTrack);
+               peers.current.forEach(pc => {
+                 const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+                 if (sender) sender.replaceTrack(videoTrack);
+               });
+               setLocalStream(new MediaStream(localStream.getTracks()));
+             }
+          }).catch(console.error);
+        };
+
+        if (localStream) {
+          const oldVideoTrack = localStream.getVideoTracks()[0];
+          localStream.removeTrack(oldVideoTrack);
+          oldVideoTrack.stop();
+          localStream.addTrack(screenTrack);
+          peers.current.forEach(pc => {
+            const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+            if (sender) sender.replaceTrack(screenTrack);
+          });
+          setLocalStream(new MediaStream(localStream.getTracks()));
+        }
+        setIsScreenSharing(true);
+      } catch (err) {
+        console.error("Failed to start screen share", err);
+      }
+    }
+  };
+
   const leave = () => {
     if (localStream) localStream.getTracks().forEach(t => t.stop());
     if (ws.current) ws.current.close();
@@ -287,8 +350,10 @@ export function useWebRTC(meetingCode: string, displayName: string) {
     remoteParticipants: Array.from(remoteParticipants.values()),
     isMuted,
     isVideoOff,
+    isScreenSharing,
     toggleMute,
     toggleVideo,
+    toggleScreenShare,
     leave,
     error,
     wasRemoved,

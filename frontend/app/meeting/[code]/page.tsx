@@ -145,8 +145,10 @@ export default function MeetingRoomPage() {
       <MeetingControls 
         isMuted={isMuted} 
         isVideoOff={isVideoOff} 
+        isScreenSharing={isScreenSharing}
         onToggleMute={toggleMute} 
         onToggleVideo={toggleVideo} 
+        onToggleScreenShare={toggleScreenShare}
         onToggleParticipants={() => {
           setIsParticipantsOpen(!isParticipantsOpen);
           if (!isParticipantsOpen) setIsChatOpen(false);

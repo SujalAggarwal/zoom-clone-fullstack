@@ -4,14 +4,16 @@ import { Mic, MicOff, Video, VideoOff, Share, Smile, MoreHorizontal, PhoneOff, U
 interface ControlsProps {
   isMuted: boolean;
   isVideoOff: boolean;
+  isScreenSharing: boolean;
   onToggleMute: () => void;
   onToggleVideo: () => void;
+  onToggleScreenShare: () => void;
   onToggleParticipants: () => void;
   onToggleChat: () => void;
   onLeave: () => void;
 }
 
-export default function MeetingControls({ isMuted, isVideoOff, onToggleMute, onToggleVideo, onToggleParticipants, onToggleChat, onLeave }: ControlsProps) {
+export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, onLeave }: ControlsProps) {
   return (
     <footer className="h-16 sm:h-20 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-3 sm:px-6 text-white">
       {/* Core controls - always visible */}
@@ -55,9 +57,12 @@ export default function MeetingControls({ isMuted, isVideoOff, onToggleMute, onT
         </button>
 
         {/* Share - hidden on very small screens */}
-        <button className="hidden sm:flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white">
-          <Share size={20} className="mb-0.5 text-green-400" />
-          <span className="text-[10px]">Share</span>
+        <button 
+          onClick={onToggleScreenShare}
+          className={`hidden sm:flex flex-col items-center justify-center w-14 h-14 rounded-xl transition hover:text-white ${isScreenSharing ? 'bg-green-500/20 text-green-400' : 'hover:bg-gray-800 text-gray-300'}`}
+        >
+          <Share size={20} className={`mb-0.5 ${isScreenSharing ? 'text-green-400' : 'text-green-400'}`} />
+          <span className="text-[10px]">{isScreenSharing ? 'Stop Share' : 'Share'}</span>
         </button>
 
         {/* Reactions - hidden on small screens */}
