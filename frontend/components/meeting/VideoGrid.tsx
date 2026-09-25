@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { RemoteParticipant } from '@/lib/useWebRTC';
 
-function VideoTile({ stream, name, isLocal = false }: { stream: MediaStream | null, name: string, isLocal?: boolean }) {
+function VideoTile({ stream, name, isLocal = false, isScreenSharing = false }: { stream: MediaStream | null, name: string, isLocal?: boolean, isScreenSharing?: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ function VideoTile({ stream, name, isLocal = false }: { stream: MediaStream | nu
           autoPlay
           playsInline
           muted={isLocal}
-          className={`w-full h-full object-cover ${isLocal ? 'scale-x-[-1]' : ''}`}
+          className={`w-full h-full ${isScreenSharing ? 'object-contain' : 'object-cover'} ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`}
         />
       ) : (
         <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gray-700 rounded-full flex items-center justify-center text-xl sm:text-2xl font-semibold text-gray-300">
@@ -33,10 +33,11 @@ function VideoTile({ stream, name, isLocal = false }: { stream: MediaStream | nu
   );
 }
 
-export default function VideoGrid({ localStream, remoteParticipants, localName }: {
+export default function VideoGrid({ localStream, remoteParticipants, localName, isScreenSharing = false }: {
   localStream: MediaStream | null,
   remoteParticipants: RemoteParticipant[],
-  localName: string
+  localName: string,
+  isScreenSharing?: boolean
 }) {
   const count = remoteParticipants.length + 1;
 
@@ -57,7 +58,7 @@ export default function VideoGrid({ localStream, remoteParticipants, localName }
   return (
     <div className="flex-1 overflow-auto bg-black flex items-center justify-center">
       <div className={gridClass}>
-        <VideoTile stream={localStream} name={localName} isLocal={true} />
+        <VideoTile stream={localStream} name={localName} isLocal={true} isScreenSharing={isScreenSharing} />
         {remoteParticipants.map(p => (
           <VideoTile key={p.id} stream={p.stream} name={p.name} />
         ))}

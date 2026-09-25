@@ -119,7 +119,7 @@ export default function MeetingRoomPage() {
 
       <main className="flex-1 relative flex overflow-hidden bg-black">
         <div className="flex-1 relative flex flex-col overflow-hidden">
-          <VideoGrid localStream={localStream} remoteParticipants={remoteParticipants} localName={localName} />
+          <VideoGrid localStream={localStream} remoteParticipants={remoteParticipants} localName={localName} isScreenSharing={isScreenSharing} />
         </div>
         <ParticipantsPanel 
           isOpen={isParticipantsOpen} 
