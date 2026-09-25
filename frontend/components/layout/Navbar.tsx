@@ -1,12 +1,24 @@
 "use client";
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Settings, Video, Bell, Search, LogOut } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   if (!user) return null;
 
   return (
@@ -35,10 +47,33 @@ export function Navbar() {
       </div>
       
       <div className="flex-1 flex items-center justify-end gap-2">
-        <button className="relative p-2 text-white/50 hover:text-white/90 hover:bg-white/[0.06] rounded-xl transition-all">
-          <Bell size={18} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2D8CFF] rounded-full"></span>
-        </button>
+        
+        {/* Notifications */}
+        <div className="relative" ref={dropdownRef}>
+          <button 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 text-white/50 hover:text-white/90 hover:bg-white/[0.06] rounded-xl transition-all"
+          >
+            <Bell size={18} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2D8CFF] rounded-full"></span>
+          </button>
+
+          {showNotifications && (
+            <div className="absolute top-full right-0 mt-2 w-72 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+              <div className="p-4 border-b border-gray-800">
+                <h3 className="font-semibold text-white">Notifications</h3>
+              </div>
+              <div className="p-4 text-center">
+                <div className="w-12 h-12 bg-white/[0.04] rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Bell size={20} className="text-white/30" />
+                </div>
+                <p className="text-white/40 text-sm">No new notifications</p>
+                <p className="text-white/30 text-xs mt-1">We'll let you know when meetings start.</p>
+              </div>
+            </div>
+          )}
+        </div>
+
         <button onClick={logout} className="p-2 text-white/50 hover:text-red-400 hover:bg-white/[0.06] rounded-xl transition-all" title="Logout">
           <LogOut size={18} />
         </button>
