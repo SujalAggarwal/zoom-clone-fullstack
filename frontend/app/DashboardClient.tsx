@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { 
   Video, Calendar, Link as LinkIcon, Copy, Play, 
   Clock, ArrowRight, Users, Zap, Plus, ChevronRight,
-  LayoutDashboard, History
+  LayoutDashboard, History, MonitorUp
 } from 'lucide-react';
 import { Meeting } from '@/types/meeting';
 import { createInstantMeeting, getUpcomingMeetings } from '@/lib/api';
@@ -126,64 +126,54 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
           </div>
         )}
 
-        {/* Action Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          {/* New Meeting */}
+        {/* Action Cards - Zoom Classic Layout (4 squares) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 max-w-3xl">
+          {/* New Meeting - Orange */}
           <button
             onClick={handleNewMeeting}
             disabled={isCreating}
-            className="action-card glass glass-hover rounded-2xl p-6 text-left group relative overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex flex-col items-center justify-center bg-[#1C1E20] hover:bg-[#2A2C2E] border border-white/[0.08] rounded-2xl p-6 text-center transition-colors disabled:opacity-60"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#2D8CFF]/10 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2D8CFF] to-[#1a6fd4] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20 btn-glow group-hover:scale-110 transition-transform">
-                {isCreating
-                  ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  : <Video size={22} className="text-white" />
-                }
-              </div>
-              <h3 className="font-semibold text-white text-base mb-1">{isCreating ? 'Creating...' : 'New Meeting'}</h3>
-              <p className="text-white/40 text-sm">Start an instant video call</p>
-              <div className="mt-4 flex items-center gap-1 text-[#2D8CFF] text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                <span>Start now</span><ArrowRight size={12} />
-              </div>
+            <div className="w-14 h-14 bg-[#F26D21] rounded-[1.2rem] flex items-center justify-center mb-4 shadow-lg shadow-[#F26D21]/20">
+              {isCreating
+                ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <Video size={28} className="text-white fill-white" />
+              }
             </div>
+            <h3 className="font-medium text-white text-sm">New Meeting</h3>
           </button>
 
-          {/* Join Meeting */}
+          {/* Join Meeting - Blue */}
           <button
             onClick={() => setIsJoinModalOpen(true)}
-            className="action-card glass glass-hover rounded-2xl p-6 text-left group relative overflow-hidden"
+            className="flex flex-col items-center justify-center bg-[#1C1E20] hover:bg-[#2A2C2E] border border-white/[0.08] rounded-2xl p-6 text-center transition-colors"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
-                <LinkIcon size={22} className="text-white" />
-              </div>
-              <h3 className="font-semibold text-white text-base mb-1">Join Meeting</h3>
-              <p className="text-white/40 text-sm">Enter a code or invite link</p>
-              <div className="mt-4 flex items-center gap-1 text-purple-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                <span>Join now</span><ArrowRight size={12} />
-              </div>
+            <div className="w-14 h-14 bg-[#0B5CFF] rounded-[1.2rem] flex items-center justify-center mb-4 shadow-lg shadow-[#0B5CFF]/20">
+              <Plus size={30} className="text-white" strokeWidth={2.5} />
             </div>
+            <h3 className="font-medium text-white text-sm">Join</h3>
           </button>
 
-          {/* Schedule */}
+          {/* Schedule - Blue */}
           <button
             onClick={() => setIsScheduleModalOpen(true)}
-            className="action-card glass glass-hover rounded-2xl p-6 text-left group relative overflow-hidden"
+            className="flex flex-col items-center justify-center bg-[#1C1E20] hover:bg-[#2A2C2E] border border-white/[0.08] rounded-2xl p-6 text-center transition-colors"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform">
-                <Calendar size={22} className="text-white" />
-              </div>
-              <h3 className="font-semibold text-white text-base mb-1">Schedule</h3>
-              <p className="text-white/40 text-sm">Plan a future meeting</p>
-              <div className="mt-4 flex items-center gap-1 text-emerald-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                <span>Schedule</span><ArrowRight size={12} />
-              </div>
+            <div className="w-14 h-14 bg-[#0B5CFF] rounded-[1.2rem] flex items-center justify-center mb-4 shadow-lg shadow-[#0B5CFF]/20">
+              <Calendar size={26} className="text-white" strokeWidth={2} />
             </div>
+            <h3 className="font-medium text-white text-sm">Schedule</h3>
+          </button>
+
+          {/* Share Screen - Blue */}
+          <button
+            onClick={() => alert("Screen share requires an active meeting. Please join or start a meeting first.")}
+            className="flex flex-col items-center justify-center bg-[#1C1E20] hover:bg-[#2A2C2E] border border-white/[0.08] rounded-2xl p-6 text-center transition-colors"
+          >
+            <div className="w-14 h-14 bg-[#0B5CFF] rounded-[1.2rem] flex items-center justify-center mb-4 shadow-lg shadow-[#0B5CFF]/20">
+              <MonitorUp size={26} className="text-white" strokeWidth={2} />
+            </div>
+            <h3 className="font-medium text-white text-sm">Share Screen</h3>
           </button>
         </div>
 
