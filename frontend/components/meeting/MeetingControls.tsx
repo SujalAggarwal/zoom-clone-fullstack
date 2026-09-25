@@ -10,11 +10,12 @@ interface ControlsProps {
   onToggleScreenShare: () => void;
   onToggleParticipants: () => void;
   onToggleChat: () => void;
+  unreadChatCount?: number;
   onSendReaction: (reaction: string) => void;
   onLeave: () => void;
 }
 
-export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, onSendReaction, onLeave }: ControlsProps) {
+export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, unreadChatCount = 0, onSendReaction, onLeave }: ControlsProps) {
   const [showReactions, setShowReactions] = React.useState(false);
   const [showMore, setShowMore] = React.useState(false);
   const [isRecording, setIsRecording] = React.useState(false);
@@ -82,23 +83,30 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         {/* Chat */}
         <button
           onClick={onToggleChat}
-          className="flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
+          className="relative flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
         >
-          <MessageSquare size={20} className="mb-0.5" />
+          <div className="relative">
+            <MessageSquare size={20} className="mb-0.5" />
+            {unreadChatCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-gray-900">
+                {unreadChatCount > 9 ? '9+' : unreadChatCount}
+              </span>
+            )}
+          </div>
           <span className="text-[9px] sm:text-[10px]">Chat</span>
         </button>
 
-        {/* Share - hidden on very small screens */}
+        {/* Share */}
         <button 
           onClick={onToggleScreenShare}
-          className={`hidden sm:flex flex-col items-center justify-center w-14 h-14 rounded-xl transition hover:text-white ${isScreenSharing ? 'bg-green-500/20 text-green-400' : 'hover:bg-gray-800 text-gray-300'}`}
+          className={`flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl transition hover:text-white ${isScreenSharing ? 'bg-green-500/20 text-green-400' : 'hover:bg-gray-800 text-gray-300'}`}
         >
           <Share size={20} className={`mb-0.5 ${isScreenSharing ? 'text-green-400' : 'text-green-400'}`} />
-          <span className="text-[10px]">{isScreenSharing ? 'Stop Share' : 'Share'}</span>
+          <span className="text-[9px] sm:text-[10px]">{isScreenSharing ? 'Stop Share' : 'Share'}</span>
         </button>
 
-        {/* Reactions - hidden on small screens */}
-        <div className="relative hidden md:block" ref={reactionsRef}>
+        {/* Reactions */}
+        <div className="relative flex" ref={reactionsRef}>
           {showReactions && (
             <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 rounded-2xl p-2 flex gap-1 shadow-2xl">
               {reactionsList.map(r => (
@@ -117,15 +125,15 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
           )}
           <button 
             onClick={() => setShowReactions(!showReactions)}
-            className="flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
+            className="flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
           >
             <Smile size={20} className="mb-0.5" />
-            <span className="text-[10px]">Reactions</span>
+            <span className="text-[9px] sm:text-[10px]">Reactions</span>
           </button>
         </div>
 
-        {/* More - hidden on small screens */}
-        <div className="relative hidden md:block" ref={moreRef}>
+        {/* More */}
+        <div className="relative flex" ref={moreRef}>
           {showMore && (
             <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-800 border border-gray-700 rounded-2xl py-2 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
               <button 
@@ -170,10 +178,10 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
           )}
           <button 
             onClick={() => setShowMore(!showMore)}
-            className="flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
+            className="flex flex-col items-center justify-center w-12 h-12 sm:w-14 sm:h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
           >
             <MoreHorizontal size={20} className="mb-0.5" />
-            <span className="text-[10px]">More</span>
+            <span className="text-[9px] sm:text-[10px]">More</span>
           </button>
         </div>
       </div>

@@ -24,6 +24,7 @@ export default function MeetingRoomPage() {
   const [error, setError] = useState(false);
   const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
   const [isHost, setIsHost] = useState(false);
 
   const { user } = useAuth();
@@ -63,6 +64,21 @@ export default function MeetingRoomPage() {
       router.push('/');
     }
   }, [wasRemoved, router]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const latestMsg = messages[messages.length - 1];
+      if (!isChatOpen && latestMsg.senderId !== clientId) {
+        setUnreadChatCount(prev => prev + 1);
+      }
+    }
+  }, [messages, isChatOpen, clientId]);
+
+  useEffect(() => {
+    if (isChatOpen) {
+      setUnreadChatCount(0);
+    }
+  }, [isChatOpen]);
 
   const handleLeave = () => {
     leave();
@@ -162,6 +178,7 @@ export default function MeetingRoomPage() {
           setIsChatOpen(!isChatOpen);
           if (!isChatOpen) setIsParticipantsOpen(false);
         }}
+        unreadChatCount={unreadChatCount}
         onSendReaction={sendReaction}
         onLeave={handleLeave} 
       />
