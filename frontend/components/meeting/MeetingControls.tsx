@@ -50,7 +50,7 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
       </div>
 
       {/* Core controls - always visible */}
-      <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-center">
+      <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-start sm:justify-center overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:hidden px-1">
         {/* Mute */}
         <button
           onClick={onToggleMute}
@@ -187,13 +187,13 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
       </div>
 
       {/* Leave button - always visible, right side */}
-      <div className="shrink-0 w-24 flex justify-end">
+      <div className="shrink-0 flex justify-end pl-2">
         <button
           onClick={onLeave}
           className="bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 sm:gap-2 transition min-h-[40px]"
         >
           <PhoneOff size={15} />
-          <span className="hidden xs:inline sm:inline">Leave</span>
+          <span className="hidden sm:inline">Leave</span>
         </button>
       </div>
     </footer>
