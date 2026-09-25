@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { getMeetingByCode, joinMeeting } from '@/lib/api';
 import { extractMeetingCode } from '@/lib/utils';
 import { Meeting } from '@/types/meeting';
+import { useAuth } from '@/lib/AuthContext';
 
 interface JoinMeetingModalProps {
   isOpen: boolean;
@@ -14,10 +15,11 @@ interface JoinMeetingModalProps {
 
 export function JoinMeetingModal({ isOpen, onClose }: JoinMeetingModalProps) {
   const router = useRouter();
+  const { user } = useAuth();
   
   const [step, setStep] = useState<1 | 2>(1);
   const [codeInput, setCodeInput] = useState('');
-  const [nameInput, setNameInput] = useState('Alex Morgan');
+  const [nameInput, setNameInput] = useState(user?.name || '');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [meeting, setMeeting] = useState<Meeting | null>(null);
@@ -26,7 +28,7 @@ export function JoinMeetingModal({ isOpen, onClose }: JoinMeetingModalProps) {
     if (isOpen) {
       setStep(1);
       setCodeInput('');
-      setNameInput('Alex Morgan');
+      setNameInput(user?.name || '');
       setError(null);
       setMeeting(null);
       setIsLoading(false);

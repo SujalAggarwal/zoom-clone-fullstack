@@ -1,8 +1,14 @@
+"use client";
 import React from 'react';
 import Link from 'next/link';
-import { Settings, Video, Bell, Search } from 'lucide-react';
+import { Settings, Video, Bell, Search, LogOut } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
 
 export function Navbar() {
+  const { user, logout } = useAuth();
+  
+  if (!user) return null;
+
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-white/[0.06] h-[60px] flex items-center px-6" 
          style={{ background: 'rgba(15,17,23,0.85)', backdropFilter: 'blur(20px)' }}>
@@ -33,11 +39,11 @@ export function Navbar() {
           <Bell size={18} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2D8CFF] rounded-full"></span>
         </button>
-        <button className="p-2 text-white/50 hover:text-white/90 hover:bg-white/[0.06] rounded-xl transition-all">
-          <Settings size={18} />
+        <button onClick={logout} className="p-2 text-white/50 hover:text-red-400 hover:bg-white/[0.06] rounded-xl transition-all" title="Logout">
+          <LogOut size={18} />
         </button>
-        <div className="ml-1 w-8 h-8 rounded-xl bg-gradient-to-br from-[#2D8CFF] to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow-lg cursor-pointer">
-          AM
+        <div className="ml-1 w-8 h-8 rounded-xl bg-gradient-to-br from-[#2D8CFF] to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow-lg" title={user.name}>
+          {user.name.substring(0, 2).toUpperCase()}
         </div>
       </div>
     </nav>

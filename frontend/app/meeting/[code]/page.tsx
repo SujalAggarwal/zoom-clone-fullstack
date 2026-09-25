@@ -12,6 +12,7 @@ import ChatPanel from '@/components/meeting/ChatPanel';
 import ReactionLayer from '@/components/meeting/ReactionLayer';
 import { Button } from '@/components/ui/Button';
 import { useWebRTC } from '@/lib/useWebRTC';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function MeetingRoomPage() {
   const params = useParams();
@@ -25,12 +26,14 @@ export default function MeetingRoomPage() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isHost, setIsHost] = useState(false);
 
+  const { user } = useAuth();
+  
   const localName = useMemo(() => {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('joinName') || 'Alex Morgan';
+      return sessionStorage.getItem('joinName') || user?.name || 'Guest';
     }
-    return 'Alex Morgan';
-  }, []);
+    return user?.name || 'Guest';
+  }, [user]);
 
   useEffect(() => {
     async function load() {

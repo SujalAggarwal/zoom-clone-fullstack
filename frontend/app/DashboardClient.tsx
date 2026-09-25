@@ -11,6 +11,7 @@ import { Meeting } from '@/types/meeting';
 import { createInstantMeeting, getUpcomingMeetings } from '@/lib/api';
 import { JoinMeetingModal } from '@/components/meeting/JoinMeetingModal';
 import { ScheduleMeetingModal } from '@/components/meeting/ScheduleMeetingModal';
+import { useAuth } from '@/lib/AuthContext';
 
 function formatMeetingDate(isoString: string) {
   const date = new Date(isoString);
@@ -54,6 +55,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
   initialUpcoming: Meeting[], initialRecent: Meeting[], error: string | null
 }) {
   const router = useRouter();
+  const { user } = useAuth();
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -61,6 +63,8 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
   const [upcomingMeetings, setUpcomingMeetings] = useState(initialUpcoming);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'recent'>('upcoming');
   const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  if (!user) return null;
 
   const refreshUpcoming = async () => {
     try {
@@ -82,7 +86,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
     setCreateError(null);
     try {
       const res = await createInstantMeeting();
-      sessionStorage.setItem('joinName', 'Alex Morgan');
+      sessionStorage.setItem('joinName', user.name);
       sessionStorage.setItem('isHost', 'true');
       router.push(`/meeting/${res.meeting_code}`);
     } catch {
@@ -104,7 +108,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
                 <div className="absolute inset-0 bg-emerald-500 rounded-full pulse-ring"></div>
                 <div className="w-2 h-2 bg-emerald-500 rounded-full relative"></div>
               </div>
-              <span className="text-emerald-400/80 text-xs sm:text-sm font-medium">Good day, Alex Morgan</span>
+              <span className="text-emerald-400/80 text-xs sm:text-sm font-medium">Good day, {user.name}</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-3 text-sm text-white/40">
