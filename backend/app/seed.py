@@ -26,21 +26,10 @@ def seed_db():
 
         # Create sample meetings
         existing_meetings = db.query(Meeting).filter(Meeting.host_id == user.id).count()
-        if existing_meetings == 0:
-            now = datetime.now()
-            
-            meetings = [
-                # Past/recent meetings only (so Upcoming tab stays clean for user testing)
-                Meeting(meeting_code="842-951-332", host_id=user.id, title="Frontend Architecture Review", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=1), duration_minutes=60, status=MeetingStatus.ended),
-                Meeting(meeting_code="521-893-019", host_id=user.id, title="Sprint Retrospective", meeting_type=MeetingType.instant, scheduled_at=now - timedelta(days=2), duration_minutes=30, status=MeetingStatus.ended),
-                Meeting(meeting_code="394-118-992", host_id=user.id, title="Client Onboarding", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=5), duration_minutes=45, status=MeetingStatus.ended),
-            ]
-            
-            for m in meetings:
-                db.add(m)
-            
-            db.commit()
-            print("Seeded database with sample past meetings.")
+        # We won't seed any dummy meetings initially.
+        # This ensures the Recent tab is completely empty for a new user, 
+        # and meetings only show up there after they actually create them.
+        pass
         else:
             print("Sample meetings already exist.")
             
