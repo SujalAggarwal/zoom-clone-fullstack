@@ -159,6 +159,14 @@ export function useWebRTC(meetingCode: string, displayName: string) {
               setIsMuted(true);
             }
           }
+        } else if (msg.type === 'force-video-off') {
+          if (stream) {
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+              videoTrack.enabled = false;
+              setIsVideoOff(true);
+            }
+          }
         } else if (msg.type === 'force-remove') {
           setWasRemoved(true);
         }

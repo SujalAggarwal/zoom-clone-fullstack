@@ -64,6 +64,22 @@ class ConnectionManager:
                     }))
                 except:
                     pass
+
+    async def force_mute_user(self, meeting_code: str, target_client_id: str):
+        if meeting_code in self.active_connections and target_client_id in self.active_connections[meeting_code]:
+            target_ws = self.active_connections[meeting_code][target_client_id]["ws"]
+            try:
+                await target_ws.send_text(json.dumps({"type": "force-mute"}))
+            except:
+                pass
+
+    async def force_video_off_user(self, meeting_code: str, target_client_id: str):
+        if meeting_code in self.active_connections and target_client_id in self.active_connections[meeting_code]:
+            target_ws = self.active_connections[meeting_code][target_client_id]["ws"]
+            try:
+                await target_ws.send_text(json.dumps({"type": "force-video-off"}))
+            except:
+                pass
                     
     async def force_remove(self, meeting_code: str, target_client_id: str):
         if meeting_code in self.active_connections and target_client_id in self.active_connections[meeting_code]:

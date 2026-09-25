@@ -220,3 +220,13 @@ async def remove_participant(meeting_code: str, client_id: str, db: Session = De
     await manager.force_remove(meeting_code, client_id)
     return {"message": "Participant removed"}
 
+@router.post("/{meeting_code}/participants/{client_id}/mute")
+async def mute_participant(meeting_code: str, client_id: str, db: Session = Depends(get_db)):
+    await manager.force_mute_user(meeting_code, client_id)
+    return {"message": "Participant muted"}
+
+@router.post("/{meeting_code}/participants/{client_id}/video-off")
+async def video_off_participant(meeting_code: str, client_id: str, db: Session = Depends(get_db)):
+    await manager.force_video_off_user(meeting_code, client_id)
+    return {"message": "Participant video turned off"}
+

@@ -69,6 +69,18 @@ export default function MeetingRoomPage() {
     } catch(err) {}
   };
 
+  const handleMuteUser = async (targetClientId: string) => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/meetings/${code}/participants/${targetClientId}/mute`, { method: 'POST' });
+    } catch(err) {}
+  };
+
+  const handleVideoOffUser = async (targetClientId: string) => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/meetings/${code}/participants/${targetClientId}/video-off`, { method: 'POST' });
+    } catch(err) {}
+  };
+
   const handleRemove = async (targetClientId: string) => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/meetings/${code}/participants/${targetClientId}/remove`, { method: 'POST' });
@@ -115,6 +127,8 @@ export default function MeetingRoomPage() {
           localClientId={clientId}
           remoteParticipants={remoteParticipants}
           onMuteAll={handleMuteAll}
+          onMuteUser={handleMuteUser}
+          onVideoOffUser={handleVideoOffUser}
           onRemove={handleRemove}
         />
       </main>

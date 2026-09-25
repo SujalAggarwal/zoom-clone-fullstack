@@ -11,11 +11,13 @@ interface ParticipantsPanelProps {
   localClientId: string;
   remoteParticipants: RemoteParticipant[];
   onMuteAll: () => void;
+  onMuteUser: (clientId: string) => void;
+  onVideoOffUser: (clientId: string) => void;
   onRemove: (clientId: string) => void;
 }
 
 export default function ParticipantsPanel({
-  isOpen, onClose, isHost, localName, localClientId, remoteParticipants, onMuteAll, onRemove
+  isOpen, onClose, isHost, localName, localClientId, remoteParticipants, onMuteAll, onMuteUser, onVideoOffUser, onRemove
 }: ParticipantsPanelProps) {
   if (!isOpen) return null;
   const total = remoteParticipants.length + 1;
@@ -53,12 +55,29 @@ export default function ParticipantsPanel({
               <span className="text-sm text-white/60">{p.name}</span>
             </div>
             {isHost && (
-              <button
-                onClick={() => onRemove(p.id)}
-                className="opacity-0 group-hover:opacity-100 text-xs text-red-400 hover:bg-red-500/10 px-2 py-1 rounded-lg transition-all"
-              >
-                Remove
-              </button>
+              <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all">
+                <button
+                  onClick={() => onMuteUser(p.id)}
+                  title="Mute User"
+                  className="text-xs text-white/50 hover:text-white hover:bg-white/[0.1] px-1.5 py-1 rounded-lg"
+                >
+                  Mute
+                </button>
+                <button
+                  onClick={() => onVideoOffUser(p.id)}
+                  title="Turn off video"
+                  className="text-xs text-white/50 hover:text-white hover:bg-white/[0.1] px-1.5 py-1 rounded-lg"
+                >
+                  Video Off
+                </button>
+                <button
+                  onClick={() => onRemove(p.id)}
+                  title="Remove from meeting"
+                  className="text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 px-1.5 py-1 rounded-lg"
+                >
+                  Remove
+                </button>
+              </div>
             )}
           </div>
         ))}
