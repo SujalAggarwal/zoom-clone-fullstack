@@ -16,6 +16,24 @@ interface ControlsProps {
 
 export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, onToggleMute, onToggleVideo, onToggleScreenShare, onToggleParticipants, onToggleChat, onSendReaction, onLeave }: ControlsProps) {
   const [showReactions, setShowReactions] = React.useState(false);
+  const [showMore, setShowMore] = React.useState(false);
+  
+  const moreRef = React.useRef<HTMLDivElement>(null);
+  const reactionsRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(event.target as Node)) {
+        setShowMore(false);
+      }
+      if (reactionsRef.current && !reactionsRef.current.contains(event.target as Node)) {
+        setShowReactions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const reactionsList = ["👍", "❤️", "😂", "😮", "👏", "🎉"];
   return (
     <footer className="h-16 sm:h-20 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-3 sm:px-6 text-white">
@@ -69,7 +87,7 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         </button>
 
         {/* Reactions - hidden on small screens */}
-        <div className="relative hidden md:block">
+        <div className="relative hidden md:block" ref={reactionsRef}>
           {showReactions && (
             <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 rounded-2xl p-2 flex gap-1 shadow-2xl">
               {reactionsList.map(r => (
@@ -96,10 +114,32 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         </div>
 
         {/* More - hidden on small screens */}
-        <button className="hidden md:flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white">
-          <MoreHorizontal size={20} className="mb-0.5" />
-          <span className="text-[10px]">More</span>
-        </button>
+        <div className="relative hidden md:block" ref={moreRef}>
+          {showMore && (
+            <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-800 border border-gray-700 rounded-2xl py-2 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+                Record Meeting
+              </button>
+              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+                Live Transcript
+              </button>
+              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+                Virtual Background
+              </button>
+              <div className="h-px bg-white/10 my-1"></div>
+              <button onClick={() => setShowMore(false)} className="w-full text-left px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors">
+                Meeting Settings
+              </button>
+            </div>
+          )}
+          <button 
+            onClick={() => setShowMore(!showMore)}
+            className="flex flex-col items-center justify-center w-14 h-14 hover:bg-gray-800 rounded-xl transition text-gray-300 hover:text-white"
+          >
+            <MoreHorizontal size={20} className="mb-0.5" />
+            <span className="text-[10px]">More</span>
+          </button>
+        </div>
       </div>
 
       {/* Leave button - always visible, right side */}
