@@ -7,6 +7,7 @@ function VideoTile({ stream, name, isLocal = false }: { stream: MediaStream | nu
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(e => console.error("Auto-play failed:", e));
     }
   }, [stream]);
 
