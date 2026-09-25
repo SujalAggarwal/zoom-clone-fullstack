@@ -108,7 +108,7 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         {/* Reactions */}
         <div className="relative flex" ref={reactionsRef}>
           {showReactions && (
-            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 rounded-2xl p-2 flex gap-1 shadow-2xl">
+            <div className="fixed bottom-[72px] sm:bottom-[88px] left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 rounded-2xl p-2 flex gap-1 shadow-2xl z-50">
               {reactionsList.map(r => (
                 <button
                   key={r}
@@ -135,7 +135,7 @@ export default function MeetingControls({ isMuted, isVideoOff, isScreenSharing, 
         {/* More */}
         <div className="relative flex" ref={moreRef}>
           {showMore && (
-            <div className="absolute bottom-full right-0 mb-2 w-48 bg-gray-800 border border-gray-700 rounded-2xl py-2 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="fixed bottom-[72px] sm:bottom-[88px] right-2 sm:right-6 w-48 bg-gray-800 border border-gray-700 rounded-2xl py-2 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 z-50">
               <button 
                 onClick={() => {
                   setIsRecording(!isRecording);
