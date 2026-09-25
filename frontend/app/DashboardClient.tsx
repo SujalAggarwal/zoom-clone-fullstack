@@ -36,14 +36,15 @@ function LiveClock() {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
-  if (!time) return <div className="h-24" />;
+  if (!time) return <div className="h-16 sm:h-24" />;
   return (
-    <div className="mb-10">
-      <div className="text-6xl font-light text-white tracking-tight">
+    <div className="mb-6 sm:mb-10">
+      <div className="text-4xl sm:text-5xl lg:text-6xl font-light text-white tracking-tight">
         {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
       </div>
-      <div className="text-white/40 text-base mt-2 font-medium">
-        {time.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+      <div className="text-white/40 text-xs sm:text-base mt-1 sm:mt-2 font-medium">
+        <span className="hidden sm:inline">{time.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+        <span className="sm:hidden">{time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
       </div>
     </div>
   );
@@ -92,10 +93,10 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
 
   return (
     <div className="min-h-screen bg-mesh">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
 
         {/* Header */}
-        <div className="flex items-end justify-between mb-10">
+        <div className="flex items-end justify-between mb-6 sm:mb-10">
           <div>
             <LiveClock />
             <div className="flex items-center gap-2 mt-1">
@@ -103,7 +104,7 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
                 <div className="absolute inset-0 bg-emerald-500 rounded-full pulse-ring"></div>
                 <div className="w-2 h-2 bg-emerald-500 rounded-full relative"></div>
               </div>
-              <span className="text-emerald-400/80 text-sm font-medium">Good day, Alex Morgan</span>
+              <span className="text-emerald-400/80 text-xs sm:text-sm font-medium">Good day, Alex Morgan</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-3 text-sm text-white/40">
@@ -248,41 +249,40 @@ export default function DashboardClient({ initialUpcoming, initialRecent, error 
                 ) : (
                   <div className="divide-y divide-white/[0.04]">
                     {upcomingMeetings.map(meeting => (
-                      <div key={meeting.id} className="meeting-row flex items-center gap-4 px-6 py-4 transition-colors">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#2D8CFF]/20 to-purple-500/10 rounded-xl flex items-center justify-center shrink-0">
-                          <Video size={16} className="text-[#2D8CFF]" />
+                      <div key={meeting.id} className="meeting-row flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 transition-colors">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-[#2D8CFF]/20 to-purple-500/10 rounded-xl flex items-center justify-center shrink-0">
+                          <Video size={15} className="text-[#2D8CFF]" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-white/90 text-sm truncate">{meeting.title}</div>
-                          <div className="flex items-center gap-3 mt-0.5">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
                             <span className="text-white/40 text-xs flex items-center gap-1">
-                              <Clock size={11} /> {meeting.scheduled_at ? formatMeetingDate(meeting.scheduled_at) : 'No time'}
+                              <Clock size={10} /> {meeting.scheduled_at ? formatMeetingDate(meeting.scheduled_at) : 'No time'}
                             </span>
-                            <span className="text-white/25">·</span>
-                            <span className="text-white/30 text-xs font-mono">{meeting.meeting_code}</span>
+                            <span className="hidden sm:inline text-white/30 font-mono text-xs">{meeting.meeting_code}</span>
                           </div>
                         </div>
-                        <div className="shrink-0">
+                        <div className="shrink-0 hidden sm:block">
                           {meeting.scheduled_at && (
                             <span className="text-emerald-400 text-xs bg-emerald-500/10 px-2 py-1 rounded-lg font-medium">
                               {getTimeUntil(meeting.scheduled_at)}
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                           <button
                             onClick={() => handleCopyLink(meeting)}
-                            className="p-2 text-white/30 hover:text-white/70 hover:bg-white/[0.06] rounded-lg transition-all"
+                            className="p-2 text-white/30 hover:text-white/70 hover:bg-white/[0.06] rounded-lg transition-all min-w-[36px] min-h-[36px] flex items-center justify-center"
                             title="Copy invite link"
                           >
                             {copiedId === meeting.id
-                              ? <span className="text-emerald-400 text-xs font-medium">Copied!</span>
+                              ? <span className="text-emerald-400 text-xs font-medium">✓</span>
                               : <Copy size={14} />
                             }
                           </button>
                           <button
                             onClick={() => router.push(`/meeting/${meeting.meeting_code}`)}
-                            className="flex items-center gap-1.5 bg-[#2D8CFF] hover:bg-[#1a6fd4] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors btn-glow"
+                            className="flex items-center gap-1.5 bg-[#2D8CFF] hover:bg-[#1a6fd4] text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors btn-glow min-h-[36px]"
                           >
                             <Play size={11} className="fill-white" /> Start
                           </button>
