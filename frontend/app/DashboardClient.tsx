@@ -8,7 +8,7 @@ import {
   LayoutDashboard, History, MonitorUp
 } from 'lucide-react';
 import { Meeting } from '@/types/meeting';
-import { createInstantMeeting, getUpcomingMeetings } from '@/lib/api';
+import { createInstantMeeting, getUpcomingMeetings, getRecentMeetings } from '@/lib/api';
 import { JoinMeetingModal } from '@/components/meeting/JoinMeetingModal';
 import { ScheduleMeetingModal } from '@/components/meeting/ScheduleMeetingModal';
 import { useAuth } from '@/lib/AuthContext';
@@ -104,6 +104,7 @@ export default function DashboardClient() {
   };
 
   const handleNewMeeting = async () => {
+    if (!user) return;
     setIsCreating(true);
     setCreateError(null);
     try {
@@ -130,7 +131,7 @@ export default function DashboardClient() {
                 <div className="absolute inset-0 bg-emerald-500 rounded-full pulse-ring"></div>
                 <div className="w-2 h-2 bg-emerald-500 rounded-full relative"></div>
               </div>
-              <span className="text-emerald-400/80 text-xs sm:text-sm font-medium">Good day, {user.name}</span>
+              <span className="text-emerald-400/80 text-xs sm:text-sm font-medium">Good day, {user?.name}</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-3 text-sm text-white/40">
