@@ -25,12 +25,24 @@ def seed_db():
             print(f"Default user already exists: {user.name}")
 
         # Create sample meetings
-        # existing_meetings = db.query(Meeting).filter(Meeting.host_id == user.id).count()
-        # if existing_meetings == 0:
-        #     # We don't want to seed dummy meetings anymore so the dashboard is clean for real users
-        #     pass
-        # else:
-        #     print("Sample meetings already exist.")
+        existing_meetings = db.query(Meeting).filter(Meeting.host_id == user.id).count()
+        if existing_meetings == 0:
+            now = datetime.now()
+            
+            meetings = [
+                # Past/recent meetings only (so Upcoming tab stays clean for user testing)
+                Meeting(meeting_code="past123", host_id=user.id, title="Frontend Architecture Review", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=1), duration_minutes=60, status=MeetingStatus.ended),
+                Meeting(meeting_code="past456", host_id=user.id, title="Sprint Retrospective", meeting_type=MeetingType.instant, scheduled_at=now - timedelta(days=2), duration_minutes=30, status=MeetingStatus.ended),
+                Meeting(meeting_code="past789", host_id=user.id, title="Client Onboarding", meeting_type=MeetingType.scheduled, scheduled_at=now - timedelta(days=5), duration_minutes=45, status=MeetingStatus.ended),
+            ]
+            
+            for m in meetings:
+                db.add(m)
+            
+            db.commit()
+            print("Seeded database with sample past meetings.")
+        else:
+            print("Sample meetings already exist.")
             
     finally:
         db.close()
