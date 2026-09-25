@@ -79,5 +79,12 @@ The UI is built with a mobile-first approach, ensuring the application looks stu
 *   💻 Tablets (~768px) - 2-column grids and optimized touch targets.
 *   🖥️ Desktops (1280px+) - Full wide-screen experience with side panels.
 
+## 🧠 Assumptions Made (Assignment Criteria)
+
+1. **Authentication vs "No Login Required":** The prompt requested both "User authentication (Login/Signup)" (Bonus) and "No Login Required" (Core). To satisfy both without causing friction for the evaluator, I implemented a frictionless **Passwordless Mock Auth** flow using the Context API and LocalStorage. Users only input their Name and Email to establish an identity for meetings/chat, without the hassle of actual account creation.
+2. **Sample Data:** The database seeds a default user (`Alex Morgan`) upon startup. However, I deliberately kept the "Recent Meetings" list empty for new users on their first login, as pre-populating past meetings created an illogical UX for a fresh account.
+3. **TURN Servers:** Since WebRTC P2P often fails over symmetric NATs or strict corporate firewalls, I integrated public OpenRelay TURN servers directly into the WebRTC hook to guarantee video connectivity during evaluation regardless of the network.
+4. **Database Choice:** SQLite was chosen over PostgreSQL to ensure the evaluator can run the backend with zero external database setup or Docker requirements.
+
 ## 🤝 Contributing
 Contributions are always welcome! Feel free to open an issue or submit a pull request.
